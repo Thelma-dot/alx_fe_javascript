@@ -8,18 +8,40 @@ let quotes = [
 // Function to display a random quote
 function showRandomQuote() {
     if (quotes.length === 0) {
-        document.getElementById("quoteDisplay").innerText = "No quotes available.";
+        updateQuoteDisplay("No quotes available.", "Unknown");
         return;
     }
     let randomIndex = Math.floor(Math.random() * quotes.length);
     let quote = quotes[randomIndex];
-    document.getElementById("quoteDisplay").innerText = `"${quote.text}" - ${quote.category}`;
+    updateQuoteDisplay(quote.text, quote.category);
+}
+
+// Function to update the quote display
+function updateQuoteDisplay(text, category) {
+    let quoteDisplay = document.getElementById("quoteDisplay");
+
+    // Remove previous quote text if it exists
+    while (quoteDisplay.firstChild) {
+        quoteDisplay.removeChild(quoteDisplay.firstChild);
+    }
+
+    let quoteText = document.createElement("p");
+    quoteText.textContent = `"${text}"`;
+
+    let quoteCategory = document.createElement("span");
+    quoteCategory.textContent = ` - ${category}`;
+
+    quoteDisplay.appendChild(quoteText);
+    quoteDisplay.appendChild(quoteCategory);
 }
 
 // Function to add a new quote
 function addQuote() {
-    let quoteText = document.getElementById("newQuoteText").value.trim();
-    let quoteCategory = document.getElementById("newQuoteCategory").value.trim();
+    let quoteTextInput = document.getElementById("newQuoteText");
+    let quoteCategoryInput = document.getElementById("newQuoteCategory");
+
+    let quoteText = quoteTextInput.value.trim();
+    let quoteCategory = quoteCategoryInput.value.trim();
 
     if (quoteText === "" || quoteCategory === "") {
         alert("Please enter both a quote and a category.");
@@ -29,8 +51,9 @@ function addQuote() {
     quotes.push({ text: quoteText, category: quoteCategory });
 
     // Clear input fields after adding
-    document.getElementById("newQuoteText").value = "";
-    document.getElementById("newQuoteCategory").value = "";
+    quoteTextInput.value = "";
+    quoteCategoryInput.value = "";
+
     alert("Quote added successfully!");
 }
 
