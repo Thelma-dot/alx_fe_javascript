@@ -347,6 +347,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
   // Sync with server every 30 seconds
   setInterval(syncWithServer, 30000);
+  // Sync after adding a new quote
+function addQuote() {
+  // ... (add quote logic)
+  syncQuotes(); // Sync with server after adding a new quote
+}
 
     // Display the last viewed quote from session storage
     const lastViewedQuote = sessionStorage.getItem('lastViewedQuote');
