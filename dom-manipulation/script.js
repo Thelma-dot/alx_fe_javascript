@@ -284,6 +284,14 @@ async function syncQuotes() {
   }
 }
 
+// Sync with server every 30 seconds
+setInterval(syncQuotes, 30000);
+
+// Sync after adding a new quote
+function addQuote() {
+  // ... (add quote logic)
+  syncQuotes(); // Sync with server after adding a new quote
+}
 
 
 // Sync local quotes with server data
