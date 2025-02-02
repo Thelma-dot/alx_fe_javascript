@@ -18,13 +18,25 @@
       cursor: pointer; 
       border-radius: 4px; 
     }
+    input[type="file"] { display: none; }
   </style>
 </head>
 <body>
   <h1>Dynamic Quote Generator</h1>
-  <div id="categories"></div>
+  <div>
+    <label for="categoryFilter">Filter by Category:</label>
+    <select id="categoryFilter" onchange="filterQuotes()">
+      <option value="all">All Categories</option>
+      <!-- Categories will be populated dynamically -->
+    </select>
+  </div>
   <div id="quoteDisplay"></div>
   <button id="newQuote">Show New Quote</button>
+  <div>
+    <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
+    <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
+    <button onclick="addQuote()">Add Quote</button>
+  </div>
   <button id="exportQuotes">Export Quotes</button>
   <label for="importFile" class="file-upload-label">Import Quotes</label>
   <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
