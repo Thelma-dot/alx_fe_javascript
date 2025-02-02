@@ -236,6 +236,56 @@ async function sendQuoteToServer(quote) {
   }
 }
 
+// Sync quotes between local storage and server
+async function syncQuotes() {
+  try {
+    // Fetch quotes from the server
+    const serverQuotes = await fetchQuotesFromServer();
+    const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
+
+    // Merge server and local quotes (server data takes precedence)
+    const mergedQuotes = [...localQuotes];
+    serverQuotes.forEach(serverQuote => {
+      const existingQuoteIndex = mergedQuotes.findIndex(
+        quote => quote.text === serverQuote.text && quote.category === serverQuote.category
+      );
+      if (existingQuoteIndex === -1) {
+        mergedQuotes.push(serverQuote); // Add new server quotes
+      } else {
+        mergedQuotes[existingQuoteIndex] = serverQuote; // Overwrite with server data
+      }
+    });
+
+    // Update local storage and UI
+    quotes = mergedQuotes;
+    saveQuotes();
+    populateCategories();
+    showRandomQuote();
+
+    // Notify user of sync status
+    document.getElementById('syncStatus').textContent = 'Data synced with server.';
+    setTimeout(() => {
+      document.getElementById('syncStatus').textContent = '';
+    }, 3000);
+
+    // Notify user if conflicts were resolved
+    if (serverQuotes.length > 0) {
+      document.getElementById('conflictNotification').textContent = 'Conflicts resolved: Server data took precedence.';
+      setTimeout(() => {
+        document.getElementById('conflictNotification').textContent = '';
+      }, 5000);
+    }
+  } catch (error) {
+    console.error('Error syncing quotes:', error);
+    document.getElementById('syncStatus').textContent = 'Failed to sync quotes with server.';
+    setTimeout(() => {
+      document.getElementById('syncStatus').textContent = '';
+    }, 3000);
+  }
+}
+
+
+
 // Sync local quotes with server data
 async function syncWithServer() {
   const serverQuotes = await fetchQuotesFromServer();
@@ -289,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
   // Sync with server every 30 seconds
   setInterval(syncWithServer, 30000);
-  
+
     // Display the last viewed quote from session storage
     const lastViewedQuote = sessionStorage.getItem('lastViewedQuote');
     if (lastViewedQuote) {
