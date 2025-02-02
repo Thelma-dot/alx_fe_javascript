@@ -18,16 +18,50 @@ function loadQuotes() {
     localStorage.setItem('quotes', JSON.stringify(quotes));
   }
 
-  function showRandomQuote() {
-    const filteredQuotes = selectedCategory
-      ? quotes.filter(quote => quote.category === selectedCategory)
-      : [...quotes];
+// Populate the category dropdown
+function populateCategories() {
+  const categoryFilter = document.getElementById('categoryFilter');
+  const categories = [...new Set(quotes.map(quote => quote.category))];
+
+  // Clear existing options except "All Categories"
+  categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+
+  // Add new category options
+  categories.forEach(category => {
+    const option = document.createElement('option');
+    option.value = category;
+    option.textContent = category;
+    categoryFilter.appendChild(option);
+  });
+
+  // Restore the last selected category
+  categoryFilter.value = selectedCategory;
+}
+
+// Filter quotes based on the selected category
+function filterQuotes() {
+  const categoryFilter = document.getElementById('categoryFilter');
+  selectedCategory = categoryFilter.value;
+  localStorage.setItem('selectedCategory', selectedCategory);
+  showRandomQuote();
+}
+
+
+
+  // Show a random quote from the filtered list
+function showRandomQuote() {
+  const filteredQuotes = selectedCategory === 'all'
+    ? [...quotes]
+    : quotes.filter(quote => quote.category === selectedCategory);
+
   
     const quoteDisplay = document.getElementById('quoteDisplay');
     quoteDisplay.innerHTML = filteredQuotes.length === 0 
       ? "No quotes available in the selected category."
       : `<blockquote>"${filteredQuotes[Math.floor(Math.random() * filteredQuotes.length)].text}"</blockquote>`;
-  // Store the last viewed quote in session storage
+  
+  
+      // Store the last viewed quote in session storage
   if (filteredQuotes.length > 0) {
     sessionStorage.setItem('lastViewedQuote', JSON.stringify(filteredQuotes[Math.floor(Math.random() * filteredQuotes.length)]));
   }
@@ -147,8 +181,3 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('quoteDisplay').innerHTML = `<blockquote>"${quote.text}"</blockquote>`;
     }
   });
-    
-  
- 
-
-
