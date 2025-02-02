@@ -263,26 +263,33 @@ async function syncQuotes() {
     showRandomQuote();
 
     // Notify user of sync status
-    document.getElementById('syncStatus').textContent = 'Data synced with server.';
+    const syncStatus = document.getElementById('syncStatus');
+    syncStatus.textContent = 'Quotes synced with server!';
+    syncStatus.style.color = 'green'; // Green for success
     setTimeout(() => {
-      document.getElementById('syncStatus').textContent = '';
+      syncStatus.textContent = '';
     }, 3000);
 
     // Notify user if conflicts were resolved
     if (serverQuotes.length > 0) {
-      document.getElementById('conflictNotification').textContent = 'Conflicts resolved: Server data took precedence.';
+      const conflictNotification = document.getElementById('conflictNotification');
+      conflictNotification.textContent = 'Conflicts resolved: Server data took precedence.';
+      conflictNotification.style.color = 'orange'; // Orange for warnings
       setTimeout(() => {
-        document.getElementById('conflictNotification').textContent = '';
+        conflictNotification.textContent = '';
       }, 5000);
     }
   } catch (error) {
     console.error('Error syncing quotes:', error);
-    document.getElementById('syncStatus').textContent = 'Failed to sync quotes with server.';
+    const syncStatus = document.getElementById('syncStatus');
+    syncStatus.textContent = 'Failed to sync quotes with server.';
+    syncStatus.style.color = 'red'; // Red for errors
     setTimeout(() => {
-      document.getElementById('syncStatus').textContent = '';
+      syncStatus.textContent = '';
     }, 3000);
   }
 }
+
 
 // Sync with server every 30 seconds
 setInterval(syncQuotes, 30000);
@@ -345,13 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('exportQuotes').addEventListener('click', exportQuotes);
   
     
-  // Sync with server every 30 seconds
-  setInterval(syncWithServer, 30000);
-  // Sync after adding a new quote
-function addQuote() {
-  // ... (add quote logic)
-  syncQuotes(); // Sync with server after adding a new quote
-}
+  
 
     // Display the last viewed quote from session storage
     const lastViewedQuote = sessionStorage.getItem('lastViewedQuote');
