@@ -3,7 +3,9 @@ const quotes = [
     { text: "The only way to do great work is to love what you do.", category: "work" },
     { text: "Innovation distinguishes between a leader and a follower.", category: "leadership" }
   ];
-  let selectedCategory = null;
+  let selectedCategory = localStorage.getItem('selectedCategory') || 'all';
+const mockApiUrl = 'https://jsonplaceholder.typicode.com/posts'; // Simulated API endpoint
+
   
   // Load quotes from local storage on initialization
 function loadQuotes() {
@@ -127,6 +129,30 @@ function showRandomQuote() {
     showRandomQuote();
   }
 
+  // Add a new quote
+function addQuote() {
+  const textInput = document.getElementById('newQuoteText');
+  const categoryInput = document.getElementById('newQuoteCategory');
+
+  const text = textInput.value.trim();
+  const category = categoryInput.value.trim();
+
+  if (!text || !category) {
+    alert('Please fill in both fields.');
+    return;
+  }
+
+  quotes.push({ text, category });
+  textInput.value = '';
+  categoryInput.value = '';
+  saveQuotes();
+  populateCategories();
+  showRandomQuote();
+  syncWithServer(); // Sync with server after adding a new quote
+}
+
+
+
   // Export quotes to JSON file
 function exportQuotes() {
     const dataStr = JSON.stringify(quotes, null, 2);
@@ -162,7 +188,64 @@ function exportQuotes() {
     };
     fileReader.readAsText(file);
   }
-  
+
+// Simulate fetching quotes from the server
+async function fetchQuotesFromServer() {
+  try {
+    const response = await fetch(mockApiUrl);
+    const data = await response.json();
+    // Simulate server response by mapping data to quotes
+    const serverQuotes = data.map(post => ({
+      text: post.title,
+      category: `Server Category ${post.id}`,
+    }));
+    return serverQuotes;
+  } catch (error) {
+    console.error('Error fetching quotes from server:', error);
+    return [];
+  }
+}
+
+
+// Sync local quotes with server data
+async function syncWithServer() {
+  const serverQuotes = await fetchQuotesFromServer();
+  const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
+
+  // Merge server and local quotes (server data takes precedence)
+  const mergedQuotes = [...localQuotes];
+  serverQuotes.forEach(serverQuote => {
+    const existingQuoteIndex = mergedQuotes.findIndex(
+      quote => quote.text === serverQuote.text && quote.category === serverQuote.category
+    );
+    if (existingQuoteIndex === -1) {
+      mergedQuotes.push(serverQuote); // Add new server quotes
+    } else {
+      mergedQuotes[existingQuoteIndex] = serverQuote; // Overwrite with server data
+    }
+  });
+
+  // Update local storage and UI
+  quotes = mergedQuotes;
+  saveQuotes();
+  populateCategories();
+  showRandomQuote();
+
+  // Notify user of sync status
+  document.getElementById('syncStatus').textContent = 'Data synced with server.';
+  setTimeout(() => {
+    document.getElementById('syncStatus').textContent = '';
+  }, 3000);
+
+  // Notify user if conflicts were resolved
+  if (serverQuotes.length > 0) {
+    document.getElementById('conflictNotification').textContent = 'Conflicts resolved: Server data took precedence.';
+    setTimeout(() => {
+      document.getElementById('conflictNotification').textContent = '';
+    }, 5000);
+  }
+}
+
   
   
   // Initialize application
