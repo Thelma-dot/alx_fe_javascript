@@ -182,6 +182,7 @@ function exportQuotes() {
         updateCategoryButtons();
         showRandomQuote();
         alert('Quotes imported successfully!');
+        syncWithServer(); // Sync with server after importing quotes
       } catch (error) {
         alert('Invalid JSON file. Please upload a valid quotes JSON file.');
       }
@@ -206,6 +207,35 @@ async function fetchQuotesFromServer() {
   }
 }
 
+// Send a new quote to the server using a POST request
+async function sendQuoteToServer(quote) {
+  try {
+    const response = await fetch(mockApiUrl, {
+      method: 'POST', // Use POST to send data to the server
+      headers: {
+        'Content-Type': 'application/json', // Specify the content type
+      },
+      body: JSON.stringify(quote), // Convert the quote object to JSON
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to send quote to server');
+    }
+
+    const data = await response.json();
+    console.log('Quote sent to server:', data);
+    document.getElementById('syncStatus').textContent = 'Quote sent to server successfully.';
+    setTimeout(() => {
+      document.getElementById('syncStatus').textContent = '';
+    }, 3000);
+  } catch (error) {
+    console.error('Error sending quote to server:', error);
+    document.getElementById('syncStatus').textContent = 'Failed to send quote to server.';
+    setTimeout(() => {
+      document.getElementById('syncStatus').textContent = '';
+    }, 3000);
+  }
+}
 
 // Sync local quotes with server data
 async function syncWithServer() {
@@ -257,6 +287,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('newQuote').addEventListener('click', showRandomQuote);
     document.getElementById('exportQuotes').addEventListener('click', exportQuotes);
   
+    
+  // Sync with server every 30 seconds
+  setInterval(syncWithServer, 30000);
     // Display the last viewed quote from session storage
     const lastViewedQuote = sessionStorage.getItem('lastViewedQuote');
     if (lastViewedQuote) {
