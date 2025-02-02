@@ -62,8 +62,7 @@ function showRandomQuote() {
       ? "No quotes available in the selected category."
       : `<blockquote>"${filteredQuotes[Math.floor(Math.random() * filteredQuotes.length)].text}"</blockquote>`;
   
-  
-      // Store the last viewed quote in session storage
+  // Store the last viewed quote in session storage
   if (filteredQuotes.length > 0) {
     sessionStorage.setItem('lastViewedQuote', JSON.stringify(filteredQuotes[Math.floor(Math.random() * filteredQuotes.length)]));
   }
@@ -290,6 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
   // Sync with server every 30 seconds
   setInterval(syncWithServer, 30000);
+  
     // Display the last viewed quote from session storage
     const lastViewedQuote = sessionStorage.getItem('lastViewedQuote');
     if (lastViewedQuote) {
