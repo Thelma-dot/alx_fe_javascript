@@ -19,6 +19,8 @@
       border-radius: 4px; 
     }
     input[type="file"] { display: none; }
+    #syncStatus { margin-top: 10px; color: #4CAF50; font-weight: bold; }
+    #conflictNotification { margin-top: 10px; color: #FF0000; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -40,6 +42,8 @@
   <button id="exportQuotes">Export Quotes</button>
   <label for="importFile" class="file-upload-label">Import Quotes</label>
   <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
+  <div id="syncStatus"></div>
+  <div id="conflictNotification"></div>
   <script src="script.js"></script>
 </body>
 </html>
